@@ -88,6 +88,7 @@ public class Scanner {
                         if (advance() == '\n')
                             line++;
                     }
+                    current += 2;
                 } else {
                     addToken(SLASH);
                 }
