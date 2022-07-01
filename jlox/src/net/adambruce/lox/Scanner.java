@@ -1,17 +1,33 @@
 package net.adambruce.lox;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static net.adambruce.lox.TokenType.*;
 
+/**
+ * Scans a Lox program and produces a stream of Tokens.
+ */
 public class Scanner {
 
+    /** The Lox program source code. */
     private final String source;
+
+    /** The list of tokens that have been created. */
     private final List<Token> tokens = new ArrayList<>();
+
+    /** The start position of the current token. */
     private int start = 0;
+
+    /** The current position of the cursor. */
     private int current = 0;
+
+    /** The current line that is being scanned. */
     private int line = 1;
 
+    /** A map of keywords and their corresponding token types. */
     private static final Map<String, TokenType> keywords;
 
     static {
@@ -39,6 +55,10 @@ public class Scanner {
         this.source = source;
     }
 
+    /**
+     * Traverses the given source and produces a list of tokens.
+     * @return a list of tokens.
+     */
     List<Token> scanTokens() {
         while(!isAtEnd()) {
             start = current;
@@ -48,86 +68,107 @@ public class Scanner {
         return tokens;
     }
 
+    /**
+     * Determines whether the scanner has reached the end of the program's source.
+     * @return true if at end of source.
+     */
     private boolean isAtEnd() {
         return current >= source.length();
     }
 
+    /**
+     * Scans a single token and adds it to the list of tokens.
+     */
     private void scanToken() {
         char c = advance();
         switch (c) {
-            case '(': addToken(LEFT_PAREN); break;
-            case ')': addToken(RIGHT_PAREN); break;
-            case '{': addToken(LEFT_BRACE); break;
-            case '}': addToken(RIGHT_BRACE); break;
-            case ',': addToken(COMMA); break;
-            case '.': addToken(DOT); break;
-            case '-': addToken(MINUS); break;
-            case '+': addToken(PLUS); break;
-            case ';': addToken(SEMICOLON); break;
-            case '*': addToken(STAR); break;
 
-            case '!':
-                addToken(match('=') ? BANG_EQUAL : BANG);
-                break;
-            case '=':
-                addToken(match('=') ? EQUAL_EQUAL : EQUAL);
-                break;
-            case '<':
-                addToken(match('=') ? LESS_EQUAL : LESS);
-                break;
-            case '>':
-                addToken(match('=') ? GREATER_EQUAL : GREATER);
-                break;
+            /* Single character tokens .*/
+            case '(' -> addToken(LEFT_PAREN);
+            case ')' -> addToken(RIGHT_PAREN);
+            case '{' -> addToken(LEFT_BRACE);
+            case '}' -> addToken(RIGHT_BRACE);
+            case ',' -> addToken(COMMA);
+            case '.' -> addToken(DOT);
+            case '-' -> addToken(MINUS);
+            case '+' -> addToken(PLUS);
+            case ';' -> addToken(SEMICOLON);
+            case '*' -> addToken(STAR);
 
-            case '/':
+            /* One or two character tokens (requires one character lookahead). */
+            case '!' -> addToken(match('=') ? BANG_EQUAL    : BANG);
+            case '=' -> addToken(match('=') ? EQUAL_EQUAL   : EQUAL);
+            case '<' -> addToken(match('=') ? LESS_EQUAL    : LESS);
+            case '>' -> addToken(match('=') ? GREATER_EQUAL : GREATER);
+
+            /* Division and comments. */
+            case '/' -> {
+
+                /* Single line comment (consume tokens until end of line or end of file). */
                 if (match('/')) {
                     while (peek() != '\n' && !isAtEnd()) advance();
-                } else if(match('*')) {
-                    while (peek() != '*' && peekNext() != '/' && !isAtEnd())
-                    {
+
+                /* Multi line comment (consume tokens until closing delimiter), requires two character lookahead. */
+                } else if (match('*')) {
+                    while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
                         if (advance() == '\n')
                             line++;
                     }
                     current += 2;
+
+                /* Division. */
                 } else {
                     addToken(SLASH);
                 }
-                break;
+            }
 
-            case ' ':
-            case '\r':
-            case '\t':
-                break;
+            /* Ignore whitespace characters. */
+            case ' ', '\r', '\t' -> {}
 
-            case '\n':
-                line++;
-                break;
+            /* If the character is a newline, increment the line counter. */
+            case '\n' -> line++;
 
-            case '"': string(); break;
+            /* If the character is a double quote, read until the closing double quote, and create a string. */
+            case '"' -> string();
 
-            default:
+            /* Attempt to parse as keyword or identifier. */
+            default -> {
                 if (isDigit(c)) {
                     number();
-                } else if(isAlpha(c)) {
-                    identifer();
+                } else if (isAlpha(c)) {
+                    identifier();
                 } else {
                     Lox.error(line, "Unexpected character.");
                 }
-                break;
+            }
         }
     }
 
+    /**
+     * Determines whether a character is alphanumeric.
+     * @param c the character to check.
+     * @return if the character is alphanumeric.
+     */
     private boolean isAlphaNumeric(char c) {
         return isAlpha(c) || isDigit(c);
     }
 
+    /**
+     * Detmerines whether a character is a letter or an underscore.
+     * @param c the character to check.
+     * @return if the character is a letter or an underscore.
+     */
     private boolean isAlpha(char c) {
         return (c >= 'a' && c <= 'z') ||
             (c >= 'A' && c <= 'Z') ||
             c == '_';
     }
 
-    private void identifer() {
+    /**
+     * Reads an alphanumeric lexeme and produces a keyword token (if valid) otherwise an identifier token.
+     * The new token is then added to the list of tokens.
+     */
+    private void identifier() {
         while(isAlphaNumeric(peek())) advance();
 
         String text = source.substring(start, current);
@@ -137,17 +178,16 @@ public class Scanner {
         addToken(type);
     }
 
-    private char peekNext() {
-        if (current + 1 >= source.length()) return '\0';
-        return source.charAt(current + 1);
-    }
-
+    /**
+     * Reads a numeric (integer or floating point) lexeme and produces a numeric token.
+     */
     private void number() {
         while (isDigit(peek())) advance();
 
-//        Look for fractional part
+        /* Look for fractional part. */
         if (peek() == '.' && isDigit(peekNext())) {
-//            Consume the '.'
+
+            /* Consume the '.'. */
             advance();
 
             while (isDigit(peek())) advance();
@@ -156,27 +196,43 @@ public class Scanner {
         addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
     }
 
+    /**
+     * Determines whether a character is a digit (0-9 decimal)
+     * @param c the character to check.
+     * @return if the character is a number.
+     */
     private boolean isDigit(char c) {
         return c >= '0' && c <= '9';
     }
 
+    /**
+     * Reads in a string, up to the terminating double quote.
+     */
     private void string() {
         while (peek() != '"' && !isAtEnd()) {
             if (peek() == '\n') line++;
             advance();
         }
 
+        /* Reached end of file without terminating the string. */
         if (isAtEnd()) {
             Lox.error(line, "Unterminated string.");
             return;
         }
 
+        /* Consume the terminating double quote. */
         advance();
 
+        /* Strip the double quotes. */
         String value = source.substring(start + 1, current - 1);
         addToken(STRING, value);
     }
 
+    /**
+     * Determines whether the current character matches the expected character.
+     * @param expected the expected character.
+     * @return if the current character matches the expected character.
+     */
     private boolean match(char expected) {
         if (isAtEnd()) return false;
         if (source.charAt(current) != expected) return false;
@@ -185,19 +241,45 @@ public class Scanner {
         return true;
     }
 
+    /**
+     * Returns the current character without consuming it.
+     * @return the current character.
+     */
     private char peek() {
         if (isAtEnd()) return '\0';
         return source.charAt(current);
     }
 
+    /**
+     * Returns the next character without consuming it.
+     * @return the next character.
+     */
+    private char peekNext() {
+        if (current + 1 >= source.length()) return '\0';
+        return source.charAt(current + 1);
+    }
+
+    /**
+     * Comsumes the current character and returns it.
+     * @return the current character.
+     */
     private char advance() {
         return source.charAt(current++);
     }
 
+    /**
+     * Adds a new token into the list of tokens, with a null literal.
+     * @param type the new token type.
+     */
     private void addToken(TokenType type) {
         addToken(type, null);
     }
 
+    /**
+     * Adds a new token into the list of tokens.
+     * @param type the new token type.
+     * @param literal the new token's literal value.
+     */
     private void addToken(TokenType type, Object literal) {
         String text = source.substring(start, current);
         tokens.add(new Token(type, text, literal, line));

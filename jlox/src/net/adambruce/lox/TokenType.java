@@ -1,8 +1,11 @@
 package net.adambruce.lox;
 
+/**
+ * Enums for all token types in Lox.
+ */
 enum TokenType {
 
-//    Single character
+    // Single character
     LEFT_PAREN,
     RIGHT_PAREN,
     LEFT_BRACE,
@@ -15,7 +18,7 @@ enum TokenType {
     SLASH,
     STAR,
 
-//    One or two characters
+    // One or two character comparison operators.
     BANG,
     BANG_EQUAL,
     EQUAL,
@@ -25,12 +28,12 @@ enum TokenType {
     LESS,
     LESS_EQUAL,
 
-//    Literals
+    // Literals
     IDENTIFIER,
     STRING,
     NUMBER,
 
-//    Keywords
+    // Keywords
     AND,
     CLASS,
     ELSE,
@@ -48,5 +51,6 @@ enum TokenType {
     VAR,
     WHILE,
 
+    // EOF
     EOF
 }

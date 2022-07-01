@@ -6,6 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Utility class to generate AST visitor class.
+ */
 public class GenerateAst {
 
     public static void main(String[] args) throws IOException {

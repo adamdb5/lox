@@ -1,5 +1,9 @@
 package net.adambruce.lox;
 
+/**
+ * Magic.
+ * TODO: Learn how the visitor pattern really works.
+ */
 abstract class Expr {
   interface Visitor<R> {
     R visitBinaryExpr (Binary expr);

@@ -1,7 +1,15 @@
 package net.adambruce.lox;
 
+/**
+ * Utility class to print an AST.
+ */
 public class AstPrinter implements Expr.Visitor<String> {
 
+    /**
+     * Returns a string representation of the given expression.
+     * @param expr the expression.
+     * @return the string representation.
+     */
     String print(Expr expr) {
         return expr.accept(this);
     }
@@ -28,6 +36,12 @@ public class AstPrinter implements Expr.Visitor<String> {
         return parenthesize(expr.operator.lexeme, expr.right);
     }
 
+    /**
+     * Parenthesizes the given expressions, placing the name in the parentheses.
+     * @param name the expression name (e.g +, -, ...)
+     * @param exprs the list of expressions.
+     * @return the string representation of the parenthesized expression.
+     */
     private String parenthesize(String name, Expr... exprs) {
         StringBuilder builder = new StringBuilder();
 
