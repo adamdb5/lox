@@ -68,7 +68,7 @@ public class Interpreter implements Expr.Visitor<Object> {
             }
 
             /* Greater than. */
-            case GREATER       -> {
+            case GREATER -> {
                 checkNumberOperands(expr.operator, left, right);
                 return (double)left >  (double)right;
             }
@@ -80,22 +80,22 @@ public class Interpreter implements Expr.Visitor<Object> {
             }
 
             /* Less than. */
-            case LESS          -> {
+            case LESS -> {
                 checkNumberOperands(expr.operator, left, right);
                 return (double)left <  (double)right;
             }
 
             /* Less than or equal to. */
-            case LESS_EQUAL    -> {
+            case LESS_EQUAL -> {
                 checkNumberOperands(expr.operator, left, right);
                 return (double)left <= (double)right;
             }
 
             /* Not equal. */
-            case BANG_EQUAL    -> { return !isEqual(left, right);         }
+            case BANG_EQUAL -> { return !isEqual(left, right); }
 
             /* Equal. */
-            case EQUAL_EQUAL   -> { return isEqual(left, right);          }
+            case EQUAL_EQUAL -> { return isEqual(left, right); }
         }
 
         return null;
