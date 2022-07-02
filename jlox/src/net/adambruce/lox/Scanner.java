@@ -110,7 +110,7 @@ public class Scanner {
 
                 /* Multi line comment (consume tokens until closing delimiter), requires two character lookahead. */
                 } else if (match('*')) {
-                    while (peek() != '*' && peekNext() != '/' && !isAtEnd()) {
+                    while (peekNext() != '/' && !isAtEnd()) {
                         if (advance() == '\n')
                             line++;
                     }
