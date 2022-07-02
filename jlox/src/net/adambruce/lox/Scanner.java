@@ -110,11 +110,35 @@ public class Scanner {
 
                 /* Multi line comment (consume tokens until closing delimiter), requires two character lookahead. */
                 } else if (match('*')) {
-                    while (peekNext() != '/' && !isAtEnd()) {
-                        if (advance() == '\n')
+                    int blockCommentDepth = 1;
+                    advance();
+
+                    while (!isAtEnd()) {
+                        /* Increment block comment depth/ */
+                        if (peek() == '/' && peekNext() == '*') {
+                            blockCommentDepth++;
+                            current += 2;
+                        }
+
+                        /* Decrement block comment depth. */
+                        else if (peek() == '*' && peekNext() == '/') {
+                            blockCommentDepth--;
+                            current += 2;
+                        }
+
+                        /* If all opened comments have been closed, break the loop. */
+                        else if (blockCommentDepth == 0) {
+                            break;
+                        }
+
+                        /* If we're at a newline, increment the line count. */
+                        else if (advance() == '\n')
                             line++;
                     }
-                    current += 2;
+
+                    if (isAtEnd()) {
+                        Lox.error(line, "Not all nested comments were closed.");
+                    }
 
                 /* Division. */
                 } else {
