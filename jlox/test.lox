@@ -1,14 +1,9 @@
-
-var a = "global";
-{
-    fun showA() {
-        print a;
+class Person {
+    init(name, age) {
+        this.name = name;
+        this.age = age;
     }
+}
 
-    showA();
-    var a = "block";
-    showA();
-}
-{
-    var a = 1;
-}
+var me = Person("Adam", 1);
+print "name: " + me.name + ", age: " + me.age;
