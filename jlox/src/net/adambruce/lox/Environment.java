@@ -39,6 +39,30 @@ public class Environment {
     }
 
     /**
+     * Gets the scope at the given distance.
+     * @param distance the distance.
+     * @return the scope.
+     */
+    Environment ancestor(int distance) {
+        Environment environment = this;
+        for (int i = 0; i < distance; i++) {
+            environment = environment.enclosing;
+        }
+
+        return environment;
+    }
+
+    /**
+     * Gets a variable's value from a given scope distance.
+     * @param distance the distance.
+     * @param name the variable's name.
+     * @return the variable's value.
+     */
+    Object getAt(int distance, String name) {
+        return ancestor(distance).values.get(name);
+    }
+
+    /**
      * Gets the value of a variable from it's name.
      * @param name the variable's name.
      * @return the variable's value.

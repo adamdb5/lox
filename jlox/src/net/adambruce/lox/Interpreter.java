@@ -1,17 +1,23 @@
 package net.adambruce.lox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interprets a Lox expression..
  */
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
+    /** Global variables. */
     final Environment globals = new Environment();
 
     /** The global environment. */
     private Environment environment = globals;
+
+    /** Local variables. */
+    private final Map<Expr, Integer> locals = new HashMap<>();
 
     Interpreter() {
         globals.define("clock", new LoxCallable() {
@@ -190,7 +196,23 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
-        return environment.get(expr.name);
+        return lookUpVariable(expr.name, expr);
+    }
+
+    /**
+     * Gets a variable from the corresponding scope distance. If no distance is
+     * provided, the variable is taken from the global scope.
+     * @param name the variable's name.
+     * @param expr the variable's expression.
+     * @return the variable's value.
+     */
+    private Object lookUpVariable(Token name, Expr expr) {
+        Integer distance = locals.get(expr);
+        if (distance != null) {
+            return environment.getAt(distance, name.lexeme);
+        } else {
+            return globals.get(name);
+        }
     }
 
     /**
@@ -230,6 +252,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
      */
     private void execute(Stmt stmt) {
         stmt.accept(this);
+    }
+
+    /**
+     * Resolves an expression and puts it in the corresponding scope.
+     * @param expr the expression.
+     * @param depth the scope depth.
+     */
+    void resolve(Expr expr, int depth) {
+        locals.put(expr, depth);
     }
 
     /**
