@@ -1,9 +1,14 @@
-class Person {
-    init(name, age) {
-        this.name = name;
-        this.age = age;
+class Cake {
+    getName() {
+        return "cake";
     }
 }
 
-var me = Person("Adam", 1);
-print "name: " + me.name + ", age: " + me.age;
+class ChocolateCake < Cake {
+    getName() {
+        return "chocolate " + super.getName();
+    }
+}
+
+var chocolateCake = ChocolateCake();
+print chocolateCake.getName();
