@@ -1,0 +1,3 @@
+/home/adam/projects/lox/clox/cmake-build-debug/CMakeFiles/clox.dir
+/home/adam/projects/lox/clox/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/adam/projects/lox/clox/cmake-build-debug/CMakeFiles/rebuild_cache.dir
