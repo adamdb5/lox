@@ -38,7 +38,7 @@
  * |oldSize   | newSize   | Operation           |
  * |----------|-----------|---------------------|
  * | zero     | non-zero  | Allocate new block. |
- * | non-zero | 0         | Free allocation.    |
+ * | non-zero | zero      | Free allocation.    |
  * | non-zero | < oldSize | Shrink allocation.  |
  * | non-zero | > oldSize | Grow allocation.    |
  *
