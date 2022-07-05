@@ -36,11 +36,11 @@ void initVM();
 void freeVM();
 
 /**
- * Interpret the given chunk and return the status.
- * @param chunk the chunk to interpret.
+ * Interpret the given source and return the status.
+ * @param source the source code to interpret.
  * @return the status.
  */
-InterpretResult interpret(Chunk *chunk);
+InterpretResult interpret(const char *source);
 
 /**
  * Pushses a new value onto the stack.
