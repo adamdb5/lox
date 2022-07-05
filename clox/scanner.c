@@ -225,7 +225,7 @@ static Token string() {
  * @return the number token.
  */
 static Token number() {
-    while (!isDigit(peek())) advance();
+    while (isDigit(peek())) advance();
 
     if (peek() == '.' && isDigit(peekNext())) {
         advance();
