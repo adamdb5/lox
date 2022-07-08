@@ -2,6 +2,23 @@
 #define CLOX_MEMORY_H
 
 #include "common.h"
+#include "object.h"
+
+/**
+ * Allocates a number of values on the heap.
+ * @param type the value type.
+ * @param count the number of values to allocate.
+ */
+#define ALLOCATE(type, count) \
+    (type*)reallocate(NULL, 0, sizeof(type) * (count))
+
+/**
+ * Frees a value.
+ * @param type the value type.
+ * @param pointer the pointer to the value to free.
+ */
+#define FREE(type, pointer) \
+    reallocate(pointer, sizeof(type), 0)
 
 /**
  * If the capacity is zero, the new capacity will be 8.
@@ -48,5 +65,10 @@
  * @return pointer to the new memory.
  */
 void *reallocate(void *pointer, size_t oldSize, size_t newSize);
+
+/**
+ * Frees the objects stored on the heap in the VM.
+ */
+void freeObjects();
 
 #endif //CLOX_MEMORY_H
