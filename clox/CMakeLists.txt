@@ -15,4 +15,5 @@ add_executable(
         compiler.c compiler.h
         scanner.c scanner.h
         object.c object.h
+        table.c table.h
 )
