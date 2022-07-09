@@ -32,6 +32,19 @@ static int simpleInstruction(const char *name, int offset) {
     return offset + 1;
 }
 
+/**
+ * Prints information about a byte instruction.
+ * @param name the name of the instruction.
+ * @param chunk the chunk that contains this instruction.
+ * @param offset the offset of the instruction within the chunk.
+ * @return the offset of the next instruction.
+ */
+static int byteInstruction(const char *name, Chunk *chunk, int offset) {
+    uint8_t slot = chunk->code[offset + 1];
+    printf("%-16s %4d\n", name, slot);
+    return offset + 2;
+}
+
 /* ===== End static functions ===== */
 
 
@@ -62,12 +75,16 @@ int disassembleInstruction(Chunk *chunk, int offset) {
             return simpleInstruction("OP_FALSE", offset);
         case OP_POP:
             return simpleInstruction("OP_POP", offset);
+        case OP_GET_LOCAL:
+            return constantInstruction("OP_GET_LOCAL", chunk, offset);
         case OP_GET_GLOBAL:
             return constantInstruction("OP_GET_GLOBAL", chunk, offset);
         case OP_DEFINE_GLOBAL:
             return constantInstruction("OP_DEFINE_GLOBAL", chunk, offset);
+        case OP_SET_LOCAL:
+            byteInstruction("OP_SET_LOCAL", chunk, offset);
         case OP_SET_GLOBAL:
-            constantInstruction("OP_SET_GLOBAL", chunk, offset);
+            byteInstruction("OP_SET_GLOBAL", chunk, offset);
         case OP_EQUAL:
             simpleInstruction("OP_EQUAL", offset);
         case OP_GREATER:
