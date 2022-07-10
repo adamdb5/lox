@@ -6,8 +6,7 @@
 /**
  * Compiles the given source to bytecode and writes it to a chunk.
  * @param source the Lox source code.
- * @param chunk the chunk to write to.
  */
-bool compile(const char *source, Chunk *chunk);
+ObjFunction *compile(const char *source);
 
 #endif //CLOX_COMPILER_H

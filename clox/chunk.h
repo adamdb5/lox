@@ -2,7 +2,6 @@
 #define CLOX_CHUNK_H
 
 #include "common.h"
-#include "memory.h"
 #include "value.h"
 
 /**
@@ -32,6 +31,7 @@ typedef enum {
     OP_JUMP,
     OP_JUMP_IF_FALSE,
     OP_LOOP,
+    OP_CALL,
     OP_RETURN
 } OpCode;
 

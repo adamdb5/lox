@@ -2,19 +2,26 @@
 #define CLOX_OBJECT_H
 
 #include "common.h"
+#include "chunk.h"
 #include "value.h"
 
-#define OBJ_TYPE(value)   (AS_OBJ(value)->type)
+#define OBJ_TYPE(value)    (AS_OBJ(value)->type)
 
-#define IS_STRING(value)  isObjType(value, OBJ_STRING)
+#define IS_FUNCTION(value) isObjType(value, OBJ_FUNCTION)
+#define IS_NATIVE(value)   isObjType(value, OBJ_NATIVE)
+#define IS_STRING(value)   isObjType(value, OBJ_STRING)
 
-#define AS_STRING(value)  ((ObjString*)AS_OBJ(value))
-#define AS_CSTRING(value) (((ObjString*)AS_OBJ(value))->chars)
+#define AS_FUNCTION(value) ((ObjFunction*)AS_OBJ(value))
+#define AS_NATIVE(value)   (((ObjNative*)AS_OBJ(value))->function)
+#define AS_STRING(value)   ((ObjString*)AS_OBJ(value))
+#define AS_CSTRING(value)  (((ObjString*)AS_OBJ(value))->chars)
 
 /**
  * Lox object types.
  */
 typedef enum {
+    OBJ_FUNCTION,
+    OBJ_NATIVE,
     OBJ_STRING
 } ObjType;
 
@@ -27,6 +34,26 @@ struct Obj {
 };
 
 /**
+ * Lox function.
+ */
+typedef struct {
+    Obj obj;
+    int arity;
+    Chunk chunk;
+    ObjString *name;
+} ObjFunction;
+
+typedef Value (*NativeFn)(int argCount, Value *args);
+
+/**
+ * Lox native function.
+ */
+typedef struct {
+    Obj obj;
+    NativeFn function;
+} ObjNative;
+
+/**
  * Lox string object.
  */
 struct ObjString {
@@ -35,6 +62,19 @@ struct ObjString {
     char *chars;
     uint32_t hash;
 };
+
+/**
+ * Creates a new function.
+ * @return the function.
+ */
+ObjFunction *newFunction();
+
+/**
+ * Creates a new native function in the Lox interpreter..
+ * @param function the native function.
+ * @return the native function.
+ */
+ObjNative *newNative(NativeFn function);
 
 /**
  * Allocates a string.
