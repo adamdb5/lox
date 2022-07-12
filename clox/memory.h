@@ -67,6 +67,23 @@
 void *reallocate(void *pointer, size_t oldSize, size_t newSize);
 
 /**
+ * Marks the object if it is not referenced.
+ * @param object the object
+ */
+void markObject(Obj *object);
+
+/**
+ * Marks a value if it is no longer referenced.
+ * @param value the value.
+ */
+void markValue(Value value);
+
+/**
+ * Collects unreferenced objects on the heap.
+ */
+void collectGarbage();
+
+/**
  * Frees the objects stored on the heap in the VM.
  */
 void freeObjects();

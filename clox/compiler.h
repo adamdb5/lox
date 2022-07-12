@@ -9,4 +9,9 @@
  */
 ObjFunction *compile(const char *source);
 
+/**
+ * Marks any unreferenced compiler values.
+ */
+void markCompilerRoots();
+
 #endif //CLOX_COMPILER_H

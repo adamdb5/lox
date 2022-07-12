@@ -47,8 +47,8 @@ static bool isFalsey(Value value) {
  * Concatenates two strings.
  */
 static void concatenate() {
-    ObjString *b = AS_STRING(pop());
-    ObjString *a = AS_STRING(pop());
+    ObjString *b = AS_STRING(peek(0));
+    ObjString *a = AS_STRING(peek(1));
     int length = a->length + b->length;
     char *chars = ALLOCATE(char, length + 1);
     memcpy(chars, a->chars, a->length);
@@ -56,6 +56,8 @@ static void concatenate() {
     chars[length] = '\0';
 
     ObjString *result = takeString(chars, length);
+    pop();
+    pop();
     push(OBJ_VAL(result));
 }
 
@@ -412,6 +414,13 @@ static InterpretResult run() {
 void initVM() {
     resetStack();
     vm.objects = NULL;
+
+    vm.bytesAllocated = 0;
+    vm.nextGC = 1024 * 1024;
+
+    vm.grayCount = 0;
+    vm.grayCapacity = 0;
+    vm.grayStack = NULL;
 
     initTable(&vm.globals);
     initTable(&vm.strings);
