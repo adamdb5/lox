@@ -357,7 +357,7 @@ static void endScope() {
             emitByte(OP_CLOSE_UPVALUE);
         } else {
             emitByte(OP_POP);
-        };
+        }
 
         current->localCount--;
     }
